@@ -1,0 +1,34 @@
+@page "/my-page-2"
+@inject ILogger<Counter> logger
+
+<PageTitle>My Page</PageTitle>
+
+<h1>My Page 2</h1>
+
+<p>Chama .NET pelo js</p>
+<p>@text</p>
+
+
+@code {
+    @*
+        https://docs.microsoft.com/pt-br/aspnet/core/blazor/javascript-interoperability/call-dotnet-from-javascript?view=aspnetcore-6.0
+    *@
+
+    private static string text = "Aguardando...";
+
+    [JSInvokable]
+    public static Task<int> MyDotnetFunc()
+    {
+        text = "Chamou!";
+        Console.WriteLine("chamou MyDotnetFunc");
+        return Task.FromResult(5);
+    }
+
+    [JSInvokable]
+    public static int MyDotnetFunc2()
+    {
+        Console.WriteLine("chamou MyDotnetFunc2");
+        return 4;
+    }
+
+}
