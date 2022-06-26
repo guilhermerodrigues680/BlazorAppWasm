@@ -1,0 +1,48 @@
+@page "/feature-tester"
+@using BlazorAppWasm.ApplicationCore.Services
+@using System.ComponentModel.DataAnnotations
+@inject UserManagerFeatureTesterService umftService;
+@inject ILogger<FeatureTesterPage> logger
+
+<PageTitle>Feature Tester Page</PageTitle>
+
+
+<div class="feature-tester-page">
+    <h1>FeatureTesterPage</h1>
+
+    <EditForm class="form" Model="@exampleModel" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <InputText id="name" @bind-Value="exampleModel.UriPath" />
+
+        <button type="submit">Submit</button>
+    </EditForm>
+</div>
+
+@exampleModel.UriPath
+
+@code {
+    private class ExampleModel
+    {
+        [Required]
+        @* [StringLength(10, ErrorMessage = "UriPath is too long.")] *@
+        public string UriPath { get; set; } = string.Empty;
+    }
+
+    private ExampleModel exampleModel = new();
+
+    private void HandleValidSubmit()
+    {
+        logger.LogInformation("HandleValidSubmit called");
+        try
+        {
+            var feature = umftService.Test("GET", exampleModel.UriPath);
+            logger.LogDebug($"Feature encontrada: {feature.Name}");
+        }
+        catch (Exception exc)
+        {
+            logger.LogError(exc, "Erro ao testar feature");
+        }
+    }
+}

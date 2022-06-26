@@ -1,0 +1,4 @@
+.feature-tester-page ::deep .form {
+  display: flex;
+  flex-direction: column;
+}
