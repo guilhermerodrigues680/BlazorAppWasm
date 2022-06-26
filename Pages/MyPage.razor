@@ -1,0 +1,55 @@
+@page "/my-page"
+@using System.Text.Json.Serialization
+@inject ILogger<Counter> logger
+@inject IJSRuntime JS
+
+<PageTitle>My Page</PageTitle>
+
+<h1>My Page</h1>
+
+<p>@text0</p>
+<p>@text</p>
+<p>UserId: @userId</p>
+
+<button class="btn btn-primary" @onclick="CallJs0">CallJs0</button>
+<button class="btn btn-primary" @onclick="CallJs">CallJs</button>
+<button class="btn btn-primary" @onclick="CallJs1">CallJs1</button>
+
+@code {
+    public class JsRuntimeObjectRef
+    {
+        [JsonPropertyName("userId")]
+        public int UserId { get; set; }
+    }
+
+    private string? text0;
+    private string? text;
+    private int? userId;
+
+    private async Task CallJs0()
+    {
+        var t0 = await JS.InvokeAsync<string>("myDemoFunc", "t0");
+        logger.LogDebug($"t0 = {t0}");
+        text0 = t0;
+    }
+
+    private void CallJs()
+    {
+        @*
+            https://docs.microsoft.com/pt-br/aspnet/core/blazor/javascript-interoperability/call-javascript-from-dotnet?view=aspnetcore-6.0
+        *@
+        var jsInProcess = (IJSInProcessRuntime)JS; // Interoperabilidade síncrona JS em Blazor WebAssembly
+        @* var t = await JS.InvokeAsync<string>("myDemoFunc", "name"); *@
+        var t = jsInProcess.Invoke<string>("myDemoFunc", "name");
+        logger.LogDebug($"t = {t}");
+        text = t;
+    }
+
+    private async Task CallJs1()
+    {
+        var jsInProcess = (IJSInProcessRuntime)JS;
+        var json = await jsInProcess.InvokeAsync<JsRuntimeObjectRef>("myPromise");
+        logger.LogDebug($"json = {json}, UserId = {json.UserId}");
+        userId = json.UserId;
+    }
+}
