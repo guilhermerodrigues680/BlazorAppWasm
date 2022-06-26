@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "ms-dotnettools.csharp",
-        "ms-dotnettools.blazorwasm-companion"
+        "ms-dotnettools.blazorwasm-companion",
+        "ms-edgedevtools.vscode-edge-devtools"
     ]
 }
