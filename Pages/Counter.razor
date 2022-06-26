@@ -1,4 +1,5 @@
 ﻿@page "/counter"
+@inject ILogger<Counter> logger
 
 <PageTitle>Counter</PageTitle>
 
@@ -13,6 +14,12 @@
 
     private void IncrementCount()
     {
+        // logger.LogTrace("Someone has clicked me!");
+        logger.LogDebug("Someone has clicked me!");
+        // logger.LogInformation("Someone has clicked me!");
+        // logger.LogWarning("Someone has clicked me!");
+        // logger.LogError("Someone has clicked me!");
+        // logger.LogCritical("Someone has clicked me!");
         currentCount++;
     }
 }
