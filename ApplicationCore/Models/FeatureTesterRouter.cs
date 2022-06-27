@@ -1,3 +1,5 @@
+using BlazorAppWasm.ApplicationCore.Exceptions;
+
 namespace BlazorAppWasm.ApplicationCore.Models;
 
 public class FeatureTesterRouter
@@ -142,7 +144,7 @@ public class FeatureTesterRouter
         if (matchFeature is null)
             // retorna null ou lança uma exceção
             // return null;
-            throw new Exception($"{httpMethod} {UriPath} - Not Found");
+            throw new NotFoundException($"{httpMethod} {UriPath} - Not Found");
 
         var featureMatch = new FeatureMatch(matchFeature, matchParams);
         Console.WriteLine(featureMatch);

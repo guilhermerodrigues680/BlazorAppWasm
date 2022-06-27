@@ -1,4 +1,5 @@
 @page "/feature-tester"
+@using BlazorAppWasm.ApplicationCore.Exceptions
 @using BlazorAppWasm.ApplicationCore.Services
 @using System.ComponentModel.DataAnnotations
 @inject UserManagerFeatureTesterService umftService;
@@ -47,12 +48,17 @@
 
     private void HandleValidSubmit()
     {
-        logger.LogInformation("HandleValidSubmit called");
+        logger.LogDebug("HandleValidSubmit called");
         try
         {
             var feature = umftService.Test(exampleModel.HttpMethod, exampleModel.UriPath);
-            logger.LogDebug($"Feature encontrada: {feature.Name}");
+            logger.LogInformation($"Feature encontrada: {feature.Name}");
             _result = feature.Name;
+        }
+        catch (NotFoundException exc)
+        {
+            logger.LogDebug(exc.Message);
+            _result = exc.Message;
         }
         catch (Exception exc)
         {
