@@ -36,6 +36,13 @@ public class FeatureTesterRouter
         {
             Console.WriteLine($"{feature.Name}");
 
+            /*
+                TODO: Checar se feature já existe na trie
+                Tratar caso de inserir rota com parametro sobre rota fixa,
+                exemplo: Já existe /alunos/matriculas e inserir /alunos/{id}
+                O contrário não acontece, já que matriculas será lido como {id}
+            */
+
             var method = feature.HttpMethod.Trim().ToLowerInvariant();
             var path = feature.UriPath.Trim().ToLowerInvariant();
 
