@@ -20,6 +20,7 @@ public class FeatureTesterRouter
     // ILogger<FeatureTesterRouter> logger
     public FeatureTesterRouter(List<Feature> features)
     {
+        _RootEntry = new MuxEntry();
         BuildTrie(features);
     }
 
@@ -33,6 +34,7 @@ public class FeatureTesterRouter
         {
             Console.WriteLine($"{feature.Name}");
 
+            var method = feature.HttpMethod.Trim().ToLowerInvariant();
             var path = feature.UriPath.Trim().ToLowerInvariant();
 
             if (!path.StartsWith("/"))
@@ -44,7 +46,7 @@ public class FeatureTesterRouter
 
             Console.WriteLine($"path={path}");
             var pathParts = path.Split('/');
-            pathParts.Prepend(feature.HttpMethod);
+            pathParts.Prepend(method);
 
             foreach (var pathPart in pathParts)
             {
@@ -78,5 +80,60 @@ public class FeatureTesterRouter
         }
 
         // TODO: Debugar estrutura gerada
+    }
+
+    public Feature Test(string httpMethod, string UriPath)
+    {
+        var method = httpMethod.Trim().ToLowerInvariant();
+        var path = UriPath.Trim().ToLowerInvariant();
+        if (!path.StartsWith("/"))
+            path = "/" + path;
+        if (path.EndsWith("/"))
+            path = path.Remove(path.Length - 1);
+
+        Console.WriteLine($"Test httpMethod={httpMethod} path={path}");
+        var pathParts = path.Split('/');
+        pathParts.Prepend(method);
+
+        var matchParams = new List<FeatureMatchParam>();
+        Feature? matchFeature = null;
+        var curEntry = _RootEntry.SubRoutes;
+        for (int idx = 0; idx < pathParts.Length; idx++)
+        {
+            var pathPart = pathParts[idx];
+            // Rota com parametro no Path?
+            var pIsPathParam = curEntry.ContainsKey("{}");
+
+            Console.WriteLine($"idx={idx} pathPart={pathPart}, pIsPathParam={pIsPathParam}");
+
+            // Se não tem o path, não é um match. Encerra o loop.
+            if (!pIsPathParam && !curEntry.ContainsKey(pathPart))
+                break;
+
+            MuxEntry pathPartMuxEntry;
+            if (pIsPathParam)
+            {
+                pathPartMuxEntry = curEntry["{}"];
+                matchParams.Add(new FeatureMatchParam(pathPartMuxEntry.ParamName ?? "{}", pathPart));
+            }
+            else
+                pathPartMuxEntry = curEntry[pathPart];
+
+            if (idx == pathParts.Length - 1 && pathPartMuxEntry.Feature is not null)
+                // Se for o último elemento e a feature existir é um match
+                matchFeature = pathPartMuxEntry.Feature;
+            else
+                // Se não for o último elemento continua navegando
+                curEntry = pathPartMuxEntry.SubRoutes;
+        }
+
+        if (matchFeature is null)
+            // retorna null ou lança uma exceção
+            // return null;
+            throw new Exception($"{httpMethod} {UriPath} - Not Found");
+
+        var featureMatch = new FeatureMatch(matchFeature, matchParams);
+        Console.WriteLine(featureMatch);
+        return matchFeature;
     }
 }

@@ -36,9 +36,6 @@ public class UserManagerFeatureTesterService
         _logger.LogDebug("UserManagerFeatureTesterService iniciado");
     }
 
-    public Feature Test(string httpMethod, string UriPath)
-    {
-        throw new Exception("Não implementado");
-    }
-
+    public Feature Test(string httpMethod, string UriPath) =>
+        _FeatureTesterRouter.Test(httpMethod, UriPath);
 }
