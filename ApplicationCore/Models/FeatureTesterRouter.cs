@@ -37,16 +37,21 @@ public class FeatureTesterRouter
             var method = feature.HttpMethod.Trim().ToLowerInvariant();
             var path = feature.UriPath.Trim().ToLowerInvariant();
 
-            if (!path.StartsWith("/"))
-                // path = path.Remove(0, 1);
-                path = "/" + path;
+            // if (!path.StartsWith("/"))
+            //     path = "/" + path;
+            if (path.StartsWith("/"))
+                path = path.Remove(0, 1);
 
             if (path.EndsWith("/"))
                 path = path.Remove(path.Length - 1);
 
             Console.WriteLine($"path={path}");
-            var pathParts = path.Split('/');
-            pathParts.Prepend(method);
+            var pathParts = new List<string>(path.Split('/'));
+            pathParts.Insert(0, method);
+
+            foreach (var p in pathParts)
+                Console.Write("{0} , ", p);
+            Console.WriteLine();
 
             foreach (var pathPart in pathParts)
             {
@@ -84,21 +89,28 @@ public class FeatureTesterRouter
 
     public Feature Test(string httpMethod, string UriPath)
     {
+        Console.WriteLine("{0} {1}", httpMethod, UriPath);
         var method = httpMethod.Trim().ToLowerInvariant();
         var path = UriPath.Trim().ToLowerInvariant();
-        if (!path.StartsWith("/"))
-            path = "/" + path;
+        // if (!path.StartsWith("/"))
+        //     path = "/" + path;
+        if (path.StartsWith("/"))
+            path = path.Remove(0, 1);
         if (path.EndsWith("/"))
             path = path.Remove(path.Length - 1);
 
         Console.WriteLine($"Test httpMethod={httpMethod} path={path}");
-        var pathParts = path.Split('/');
-        pathParts.Prepend(method);
+        var pathParts = new List<string>(path.Split('/'));
+        pathParts.Insert(0, method);
+
+        foreach (var p in pathParts)
+            Console.Write("{0} , ", p);
+        Console.WriteLine();
 
         var matchParams = new List<FeatureMatchParam>();
         Feature? matchFeature = null;
         var curEntry = _RootEntry.SubRoutes;
-        for (int idx = 0; idx < pathParts.Length; idx++)
+        for (int idx = 0; idx < pathParts.Count; idx++)
         {
             var pathPart = pathParts[idx];
             // Rota com parametro no Path?
@@ -119,7 +131,7 @@ public class FeatureTesterRouter
             else
                 pathPartMuxEntry = curEntry[pathPart];
 
-            if (idx == pathParts.Length - 1 && pathPartMuxEntry.Feature is not null)
+            if (idx == pathParts.Count - 1 && pathPartMuxEntry.Feature is not null)
                 // Se for o último elemento e a feature existir é um match
                 matchFeature = pathPartMuxEntry.Feature;
             else
