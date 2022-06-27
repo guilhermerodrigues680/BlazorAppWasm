@@ -14,35 +14,50 @@
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <InputText id="name" @bind-Value="exampleModel.UriPath" />
+        <Label>
+            HttpMethod:
+            <InputText @bind-Value="exampleModel.HttpMethod" />
+        </Label>
+        <label>
+            UriPath:
+            <InputText id="name" @bind-Value="exampleModel.UriPath" />
+        </label>
 
         <button type="submit">Submit</button>
     </EditForm>
-</div>
 
-@exampleModel.UriPath
+    <div>
+        Result: @_result
+    </div>
+</div>
 
 @code {
     private class ExampleModel
     {
         [Required]
-        @* [StringLength(10, ErrorMessage = "UriPath is too long.")] *@
+        [StringLength(10, ErrorMessage = "HttpMethod is too long.")]
+        public string HttpMethod { get; set; } = string.Empty;
+
+        [Required]
         public string UriPath { get; set; } = string.Empty;
     }
 
     private ExampleModel exampleModel = new();
+    private string _result = string.Empty;
 
     private void HandleValidSubmit()
     {
         logger.LogInformation("HandleValidSubmit called");
         try
         {
-            var feature = umftService.Test("GET", exampleModel.UriPath);
+            var feature = umftService.Test(exampleModel.HttpMethod, exampleModel.UriPath);
             logger.LogDebug($"Feature encontrada: {feature.Name}");
+            _result = feature.Name;
         }
         catch (Exception exc)
         {
             logger.LogError(exc, "Erro ao testar feature");
+            _result = exc.Message;
         }
     }
 }
