@@ -13,14 +13,35 @@ public class UserManagerFeatureTesterService
             UriPath= "/",
         },
         new Feature(){
+            Name= "Get ABCD",
+            HttpMethod= "GET",
+            UriPath= "/a/b/{c}/{d}",
+        },
+        // TODO: Gerenciar conflitos
+        // new Feature(){
+        //     Name= "Get Root",
+        //     HttpMethod= "GET",
+        //     UriPath= "/{conflito}",
+        // },
+        new Feature(){
+            Name= "Ler todos alunos",
+            HttpMethod= "GET",
+            UriPath= "/alunos",
+        },
+        new Feature(){
             Name= "Ler alunos individualmente",
             HttpMethod= "GET",
             UriPath= "/alunos/{id}",
         },
         new Feature(){
-            Name= "Ler todos alunos",
-            HttpMethod= "GET",
-            UriPath= "/alunos",
+            Name= "Alterar alunos individualmente",
+            HttpMethod= "PUT",
+            UriPath= "/alunos/{id}",
+        },
+        new Feature(){
+            Name= "Alterar foto de alunos individualmente",
+            HttpMethod= "PATCH",
+            UriPath= "/alunos/{id}/photo",
         },
         new Feature(){
             Name= "Cadastrar aluno",
